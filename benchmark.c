@@ -1,6 +1,6 @@
 #include <time.h>
 #include <stdio.h>
-#include<stdlib.h>
+#include <stdlib.h>
 #include <limits.h>
 
 #define BILLION  1000000000.0	//1 billion defined to avoid code clutter
