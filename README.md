@@ -3,7 +3,7 @@ A repo containing the benchmark program used in the LQICM senior capstone projec
 
 ## To Do!
 - Create a way to bulk measure files
-- Output results to a .txt file
+- ~~Output results to a .txt file~~
 - Comment and clean up code
 
 ## Contents
