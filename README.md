@@ -21,6 +21,7 @@ A repo containing the benchmark program used in the LQICM senior capstone projec
 4. Save your code.
 5. Compile your code using clang in the terminal. I recommend using this line: `clang-15 benchmark.c -O0 -o benchmark -lm`.
 6. Run your compiled code. `./benchmark`.
+7. See console and/or output file in the `Outputs` folder for results.
 
 ## Extras
 If you want to change the number of iterations your code sample runs for, change `samples`.
