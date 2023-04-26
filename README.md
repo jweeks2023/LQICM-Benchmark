@@ -2,9 +2,9 @@
 A repo containing the benchmark program used in the LQICM senior capstone project. THIS IS A WIP!!!
 
 ## To Do!
-- ~~Create a way to bulk measure files
+- ~~Create a way to bulk measure files~~
 - ~~Output results to a .txt file~~
-- ~~Comment and clean up code
+- ~~Comment and clean up code~~
 
 ## Contents
 - README.md: This File!
