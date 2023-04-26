@@ -105,3 +105,6 @@ int main(void) {
 	printf("Check the \"Outputs\" folder for results.\n");
 	return 0;
 }
+/*
+Created by Jason Weeks, Justice Howley, and Ian Yelle, 2023
+*/
