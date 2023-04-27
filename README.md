@@ -10,7 +10,7 @@ A repo containing the benchmark program used in the LQICM senior capstone projec
 ## Prerequisites
 - A computer with LLVM installed (Linux Required?)
 - Code that you want to benchmark
-- A general understanding of how to use a terminal
+- A general understanding of how to use a terminal and C compilers like LLVM, Clang, or GCC
 
 ## How To Use:
 ### Set Up
