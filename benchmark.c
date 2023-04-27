@@ -11,7 +11,7 @@
 #define COMPILER 	"clang-15"			//specifies what compiler version you're using (default: clang-15)
 #define INPUTFOLDER 	"./CodeToTest/"			//filepath for folder containing files to test (default: " ./CodeToTest/")
 #define OUTPUTFOLDER 	"./Outputs/"			//filepath for folder containing results of benchmark (default: "./Outputs/")
-#define OPTLEVEL 	"O0"				//the level of optimization the code being benchmarked is 
+#define OPTLEVEL 	"O0"				//the level of optimization the code being benchmarked is (default: O0)
 
 double Median(double dataArray[]) {
 	for (int i = 0; i < ITERATIONS; ++i){			//simple sorting loop to order array
