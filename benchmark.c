@@ -8,6 +8,7 @@
 
 #define ITERATIONS 20		//number of times the code is run
 #define NEATDISPLAY true	//sets if results will be output in a table or plain numbers; true = table, false = plain
+#define COMPILER "clang-15"	//specifies what compiler version you're using 
 
 double Median(double dataArray[]) {
 	for (int i = 0; i < ITERATIONS; ++i){			//simple sorting loop to order array
@@ -24,7 +25,7 @@ double Median(double dataArray[]) {
 }
 
 //Grabbing timestamp based on guide here: https://www.tutorialspoint.com/c_standard_library/c_function_strftime.htm
-int OutputToFile(double dataArray[], double sum) {
+int OutputToFile(double dataArray[], double sum, char codeName[]) {
 	FILE *fileptr;
 	time_t rawtime;
 	struct tm *curTime;
@@ -42,6 +43,8 @@ int OutputToFile(double dataArray[], double sum) {
 		printf("File output failed.");
 		return 0;
 	}
+	
+	fprintf(fileptr, "Benchmark Results of %s\n", codeName);
 	
 	if(NEATDISPLAY) {									//outputs results of benchmark in neat table
 		fprintf(fileptr, "Iteration Runtimes:\n ID|Runtime (sec)\n---|-------------\n");
@@ -64,47 +67,46 @@ int OutputToFile(double dataArray[], double sum) {
 int main(void) {
 	struct timespec start, end;							//timespec objects used to mark start and end times
 	struct dirent *entry;   							//Will grab info on things found in the directory
-	DIR *dirObj;           								//The directory object
-	char path[50] = "./CodeToTest/";  					//The path of the Benchmarking code
+    DIR *dirObj;           								//The directory object
+    char path[50] = "./CodeToTest/";  					//The path of the Benchmarking code
 	dirObj = opendir(path);     						//Opens the directory
 	
 
-	if(dirObj == NULL){         						//If the directory is missing or been removed from the parent directory...
-		printf("CodeToTest directory does not exist, or has been removed from the parent directory.");
-        	return -1;
-    	}
+    if(dirObj == NULL){         						//If the directory is missing or been removed from the parent directory...
+        printf("CodeToTest directory does not exist, or has been removed from the parent directory.");
+        return -1;
+    }
 
-    	while((entry=readdir(dirObj))){      				//Read the directory
+    while((entry=readdir(dirObj))){      				//Read the directory
 		double iterData[ITERATIONS];					//array to store each iteration's runtime
 		double sum = 0;
-		if(strstr(entry->d_name, ".c")){    			//If the file is a C file...
-		    char file[100] = "clang-15 ./CodeToTest/";
-		    strcat(strcat(file,entry->d_name)," -O0 -o ./CodeToTest/testExe"); //Create the CMD command to compile (note that we're compiling with no opt)
-		    system(file);    							//Create the executable for the C file
+        if(strstr(entry->d_name, ".C") || strstr(entry->d_name, ".c")){	//If the file is a C file...
+            char file[100] = COMPILER;
+            strcat(strcat(strcat(file, " ./CodeToTest/"),entry->d_name)," -O0 -o ./CodeToTest/testExe"); //Create the CMD command to compile (note that we're compiling with no opt)
+            printf("");
+            system(file);    							//Create the executable for the C file
+            printf("");
+			
+            printf("Running benchmark for %s...", entry->d_name);
+			fflush(stdout);
 
-		    printf("Running benchmark for %s...", entry->d_name);
-				fflush(stdout);
+			for(int i = 0; i < ITERATIONS; i++) {
+				clock_gettime(CLOCK_REALTIME, &start);
+				
+				system("./CodeToTest/testExe");			//actually runs the file we compiled
+				
+				clock_gettime(CLOCK_REALTIME, &end);
+				iterData[i] = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1000000000.0;	//this calculates the runtime in seconds (with 6 decimals of precision)
+				sum += iterData[i];
+			}
 
-				for(int i = 0; i < ITERATIONS; i++) {
-					clock_gettime(CLOCK_REALTIME, &start);
-
-					system("./CodeToTest/testExe");			//actually runs the file we compiled
-
-					clock_gettime(CLOCK_REALTIME, &end);
-					iterData[i] = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1000000000.0;	//this calculates the runtime in seconds (with 6 decimals of precision)
-					sum += iterData[i];
-				}
-
-				printf("Done!\033[0;32m\u221A\033[0m\n");	//prints the green check :)
-				OutputToFile(iterData, sum);
-				system("rm ./CodeToTest/testExe");    		//Delete the leftover executable
-        	}
-    	}
+			printf("Done!\033[0;32m\u221A\033[0m\n");	//prints the green check :)
+			OutputToFile(iterData, sum, entry->d_name);
+			system("rm ./CodeToTest/testExe");    		//Delete the leftover executable
+        }
+    }
     
-    	closedir(dirObj);   								//Close the directory
+    closedir(dirObj);   								//Close the directory
 	printf("Check the \"Outputs\" folder for results.\n");
 	return 0;
 }
-/*
-Created by Jason Weeks, Justice Howley, and Ian Yelle, 2023
-*/
