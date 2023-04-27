@@ -1,3 +1,5 @@
+//A simple program to demonstrate how the benchmark works.
+
 #include <stdio.h>
 #include <limits.h>
 
