@@ -17,7 +17,7 @@ A repo containing the benchmark program used in the LQICM senior capstone projec
 1. Download/clone the repo to the desired location.
 2. If desired, change `ITERATIONS` or `NEATDISPLAY` in `benchmark.c` to desired values.
 4. Save `benchmark.c` if any changes were made.
-5. If not already there, naviagte to the `LQICM-Benchmark` folder in the terminal window. (Use `cd`)
+5. If not already there, naviagte to the `LQICM-Benchmark` folder in the terminal window.
 6. Compile `benchmark.c`.
     - Note: We recommend using clang since it comes with LLVM and is more efficient than gcc. Ultimately, you can use any C compiler you like.
     - Example using clang-15 with no optimization: `clang-15 benchmark.c -O0 -o benchmark -lm`.
