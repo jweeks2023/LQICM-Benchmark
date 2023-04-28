@@ -14,6 +14,7 @@
 #define OUTPUTFOLDER 	"./Outputs/"		//filepath for folder containing results of benchmark (default: "./Outputs/")
 #define OPTLEVEL 		"O0"				//the level of optimization the code being benchmarked is (default: O0)
 
+//Method to find the median of an array
 double Median(double dataArray[]) {
 	for (int i = 0; i < ITERATIONS; ++i){			//simple sorting loop to order array
 	   for (int j = i + 1; j < ITERATIONS; ++j){
@@ -105,7 +106,7 @@ int main(void) {
 				sum += iterData[i];
 			}
 
-			printf("Done!\033[0;32m\u221A\033[0m\n");	//prints the green check :)
+			printf("Done!\033[0;32m\u2713\033[0m\n");	//prints the green check :)
 			OutputToFile(iterData, sum, entry->d_name);		
 			system(rm);									//Delete the leftover executable
         }
