@@ -8,8 +8,9 @@ A repo containing the benchmark program used in the LQICM senior capstone projec
 - Outputs Folder: This is where the results of the benchmark are output
 
 ## Prerequisites
-- A computer with LLVM installed (Linux Required?)
+- A computer/virtual machine running Linux
     - Note: Further testing needed on other operating systems before I can confirm that it's functional on Windows/Mac
+- A C compiler (I recommend LLVM or GCC)
 - Code that you want to benchmark
 - A general understanding of how to use a terminal and C compilers like LLVM, Clang, or GCC
 
@@ -42,11 +43,8 @@ A repo containing the benchmark program used in the LQICM senior capstone projec
 - Output files will be in the format `output YYYY-MM-DD HHMMSS.txt`. The title of the C program that is timed is contained at the top of the file.
 - Data will be in seconds, with 6 decimals of precision.
 
-## Some Notes
-If you want to change the number of times each file is benchmarked, change `ITERATIONS`.
-If you want your benchmark results to be output in a table, set `NEATDISPLAY` to `true`.
-
 ## Common Bugs
-`sh: 1: [OBJECT OR FILE PATH]: not found` - Most likely the compilation of the C file being benchmark failed. Check the `COMPILERPATH` parameter to make sure it points to the same folder `COMPILER` exists in. 
+`sh: 1: [OBJECT OR FILE PATH]: not found` - Most likely the compilation of the C file being benchmark failed. Check the `COMPILERPATH` parameter to make sure it points to the same folder `COMPILER` exists in.
+Any error message that displays repeatedly in rapid succession - This is most likely an error with your C file. Make sure you can compile and run your code through your compiler before putting it in the `CodeToTest` folder.
 
 Created by Jason Weeks, Justice Howley, and Ian Yelle, 2023 
