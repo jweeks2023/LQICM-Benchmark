@@ -6,12 +6,13 @@
 #include <dirent.h>
 #include <unistd.h>
 
-#define ITERATIONS 	20				//number of times each file is benchmarked (default: 20)
+#define ITERATIONS 		20					//number of times each file is benchmarked (default: 20)
 #define NEATDISPLAY 	true				//sets if results will be output in a table or plain numbers; true = table, false = plain (default: true)
-#define COMPILER 	"clang-15"			//specifies what compiler version you're using (default: clang-15)
-#define INPUTFOLDER 	"./CodeToTest/"			//filepath for folder containing files to test (default: " ./CodeToTest/")
-#define OUTPUTFOLDER 	"./Outputs/"			//filepath for folder containing results of benchmark (default: "./Outputs/")
-#define OPTLEVEL 	"O0"				//the level of optimization the code being benchmarked is (default: O0)
+#define COMPILER 		"clang-15"			//specifies what compiler version you're using (default: clang-15)
+#define COMPILERPATH	"../../../usr/bin/"	//filepath of the compiler defined above (default: "../../../usr/bin/")
+#define INPUTFOLDER 	"./CodeToTest/"		//filepath for folder containing files to test (default: " ./CodeToTest/")
+#define OUTPUTFOLDER 	"./Outputs/"		//filepath for folder containing results of benchmark (default: "./Outputs/")
+#define OPTLEVEL 		"O0"				//the level of optimization the code being benchmarked is (default: O0)
 
 double Median(double dataArray[]) {
 	for (int i = 0; i < ITERATIONS; ++i){			//simple sorting loop to order array
@@ -87,7 +88,7 @@ int main(void) {
 		double sum = 0;
         if(strstr(entry->d_name, ".C") || strstr(entry->d_name, ".c")){	//If the file is a C file...
             char file[100];
-            snprintf(file, sizeof file, "%s %s%s -%s -o %stestExe", COMPILER, INPUTFOLDER, entry->d_name, OPTLEVEL, INPUTFOLDER); //Create the CMD command to compile
+            snprintf(file, sizeof file, "%s%s %s%s -%s -o %stestExe", COMPILERPATH, COMPILER, INPUTFOLDER, entry->d_name, OPTLEVEL, INPUTFOLDER); //Create the CMD command to compile
             system(file);    							//Create the executable for the C file
 			
             printf("Running benchmark for %s...", entry->d_name);
