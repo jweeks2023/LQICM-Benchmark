@@ -2,6 +2,7 @@
 A repo containing the benchmark program used in the Loop Quasi-Invariant Code Motion (LQICM) senior capstone project.
 
 ## Contents
+- License.md: Legal stuff
 - README.md: This File!
 - benchmark.c: The benchmarking code in question.
 - CodeToTest Folder: Destination folder for all test code
