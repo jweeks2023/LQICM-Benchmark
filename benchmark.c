@@ -30,7 +30,7 @@ double Median(double dataArray[]) {
 }
 
 //Grabbing timestamp based on guide here: https://www.tutorialspoint.com/c_standard_library/c_function_strftime.htm
-int OutputToFile(double dataArray[], double sum, char codeName[]) {
+int OutputToFile(double dataArray[], double sum, char codeName[], int ctr) {
 	FILE *fileptr;
 	time_t rawtime;
 	struct tm *curTime;
@@ -41,7 +41,7 @@ int OutputToFile(double dataArray[], double sum, char codeName[]) {
 	
 	strftime(timestamp,20,"%Y-%m-%d %H%M%S", curTime);	//constructs timestamp in YYYY-MM-DD HHMMSS format (HH in 24hr form)
 	char fileName[80];
-	snprintf(fileName, sizeof fileName, "%soutput %s.txt", OUTPUTFOLDER, timestamp);	//constructs filepath, with final format being "output YYYY-MM-DD HHMMSS.txt"
+	snprintf(fileName, sizeof fileName, "%soutput%d %s.txt", OUTPUTFOLDER, ctr, timestamp);	//constructs filepath, with final format being "output YYYY-MM-DD HHMMSS.txt"
 	
 	fileptr = fopen(fileName, "w");						//creates file
 	if (fileptr == NULL) {
@@ -78,6 +78,7 @@ int main(void) {
 	snprintf(exe, sizeof exe, "%stestExe", INPUTFOLDER);//string that contains the command to run the generated executable during the benchmark
 	char rm[50];
 	snprintf(rm, sizeof rm, "rm %stestExe",INPUTFOLDER);//string that contains the command to remove the exe after benchmark is complete
+	int ctr = 0;
 
     if(dirObj == NULL){         						//If the directory is missing or been removed from the parent directory...
         printf("CodeToTest directory does not exist, or has been removed from the parent directory.");
@@ -88,6 +89,7 @@ int main(void) {
 		double iterData[ITERATIONS];					//array to store each iteration's runtime
 		double sum = 0;
         if(strstr(entry->d_name, ".C") || strstr(entry->d_name, ".c")){	//If the file is a C file...
+	    ctr++;
             char file[100];
             snprintf(file, sizeof file, "%s%s %s%s -%s -o %stestExe", COMPILERPATH, COMPILER, INPUTFOLDER, entry->d_name, OPTLEVEL, INPUTFOLDER); //Create the CMD command to compile
             system(file);    							//Create the executable for the C file
@@ -107,7 +109,7 @@ int main(void) {
 			}
 
 			printf("Done!\033[0;32m\u2713\033[0m\n");	//prints the green check :)
-			OutputToFile(iterData, sum, entry->d_name);		
+			OutputToFile(iterData, sum, entry->d_name, ctr);		
 			system(rm);									//Delete the leftover executable
         }
     }
