@@ -7,7 +7,7 @@
 #include <unistd.h>
 
 #define ITERATIONS 		20					//number of times each file is benchmarked (default: 20)
-#define NEATDISPLAY 	true				//sets if results will be output in a table or plain numbers; true = table, false = plain (default: true)
+#define OUTPUTTYPE 		2					//sets if results will be output in a table or plain numbers; 0 = plain, 1 = table, 2 = CSV format
 #define COMPILER 		"clang-15"			//specifies what compiler version you're using (default: clang-15)
 #define COMPILERPATH	"../../../usr/bin/"	//filepath of the compiler defined above (default: "../../../usr/bin/")
 #define INPUTFOLDER 	"./CodeToTest/"		//filepath for folder containing files to test (default: " ./CodeToTest/")
@@ -41,7 +41,12 @@ int OutputToFile(double dataArray[], double sum, char codeName[], int ctr) {
 	
 	strftime(timestamp,20,"%Y-%m-%d %H%M%S", curTime);	//constructs timestamp in YYYY-MM-DD HHMMSS format (HH in 24hr form)
 	char fileName[80];
-	snprintf(fileName, sizeof fileName, "%soutput%d %s.txt", OUTPUTFOLDER, ctr, timestamp);	//constructs filepath, with final format being "output YYYY-MM-DD HHMMSS.txt"
+	if (OUTPUTTYPE == 2) {								//constructs filepath, with final format being "output YYYY-MM-DD HHMMSS.txt (or .csv)"
+		snprintf(fileName, sizeof fileName, "%soutput%d %s.csv", OUTPUTFOLDER, ctr, timestamp);	
+	}
+	else {
+		snprintf(fileName, sizeof fileName, "%soutput%d %s.txt", OUTPUTFOLDER, ctr, timestamp);
+	}
 	
 	fileptr = fopen(fileName, "w");						//creates file
 	if (fileptr == NULL) {
@@ -49,21 +54,33 @@ int OutputToFile(double dataArray[], double sum, char codeName[], int ctr) {
 		return 0;
 	}
 	
-	fprintf(fileptr, "Benchmark Results of %s\n", codeName);
-	
-	if(NEATDISPLAY) {									//outputs results of benchmark in neat table
+	if(OUTPUTTYPE == 1) {									//outputs results of benchmark in neat table
+		fprintf(fileptr, "Benchmark Results of %s\n", codeName);
 		fprintf(fileptr, "Iteration Runtimes:\n ID|Runtime (sec)\n---|-------------\n");
 		for(int i = 0; i < ITERATIONS; i++) {
 			fprintf(fileptr, "%3d|%f\n", i + 1, dataArray[i]);
 		}
+		fprintf(fileptr, "Mean runtime: %f\n", sum/ITERATIONS);
+		fprintf(fileptr, "Median runtime: %f\n", Median(dataArray));
 	}
-	else {												//outputs results of benchmark in plain numbers
+	else if(OUTPUTTYPE == 2) {								//outputs results of benchmark in CSV format
+		fprintf(fileptr, "%s\n", codeName);
+		fprintf(fileptr, "Iterations, Runtime\n");
+		for(int i = 0; i < ITERATIONS; i++) {
+			fprintf(fileptr, "%d,%f\n", i + 1, dataArray[i]);
+		}
+		fprintf(fileptr, "Mean:, %f\n", sum/ITERATIONS);
+		fprintf(fileptr, "Median:, %f\n", Median(dataArray));
+	}
+	else {													//outputs results of benchmark in plain format
+		fprintf(fileptr, "Benchmark Results of %s\n", codeName);
 		for(int i = 0; i < ITERATIONS; i++) {
 			fprintf(fileptr, "%f\n", dataArray[i]);
 		}
+		fprintf(fileptr, "Mean runtime: %f\n", sum/ITERATIONS);
+		fprintf(fileptr, "Median runtime: %f\n", Median(dataArray));
 	}
-	fprintf(fileptr, "Mean runtime: %f\n", sum/ITERATIONS);
-	fprintf(fileptr, "Median runtime: %f\n", Median(dataArray));
+	
 	fclose(fileptr);
 	return 1;
 }
@@ -79,17 +96,18 @@ int main(void) {
 	char rm[50];
 	snprintf(rm, sizeof rm, "rm %stestExe",INPUTFOLDER);//string that contains the command to remove the exe after benchmark is complete
 	int ctr = 0;
+	int fileCtr = 0;
 
     if(dirObj == NULL){         						//If the directory is missing or been removed from the parent directory...
         printf("CodeToTest directory does not exist, or has been removed from the parent directory.");
         return -1;
     }
-
+	
     while((entry=readdir(dirObj))){      				//Read the directory
 		double iterData[ITERATIONS];					//array to store each iteration's runtime
 		double sum = 0;
         if(strstr(entry->d_name, ".C") || strstr(entry->d_name, ".c")){	//If the file is a C file...
-	    ctr++;
+			ctr++;
             char file[100];
             snprintf(file, sizeof file, "%s%s %s%s -%s -o %stestExe", COMPILERPATH, COMPILER, INPUTFOLDER, entry->d_name, OPTLEVEL, INPUTFOLDER); //Create the CMD command to compile
             system(file);    							//Create the executable for the C file
