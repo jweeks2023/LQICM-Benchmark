@@ -31,10 +31,7 @@ double Median(double dataArray[]) {
 	return ITERATIONS % 2 == 0 ? (dataArray[ITERATIONS/2] + dataArray[(ITERATIONS/2) + 1]) / 2 : dataArray[ITERATIONS/2];	//if number of entries in array is even, return the average the two center entries, otherwise return the center entry
 }
 
-//Grabbing timestamp based on guide here: https://www.tutorialspoint.com/c_standard_library/c_function_strftime.htm
-int OutputToFile(double dataArray[], char codeName[], double mean, double median, int ctr) {
-	FILE *fileptr;
-	char fileName[80];
+char* GenerateTimestamp() {							//generates the timestamp for output files
 	time_t rawtime;
 	struct tm *curTime;
 	char *timestamp;
@@ -42,12 +39,19 @@ int OutputToFile(double dataArray[], char codeName[], double mean, double median
 	time(&rawtime);
 	curTime = localtime(&rawtime);						//sets time to current time, then stores it
 	strftime(timestamp,20,"%Y-%m-%d %H%M%S", curTime);	//constructs timestamp in YYYY-MM-DD HHMMSS format (HH in 24hr form)
+	return timestamp;
+}
+
+//Grabbing timestamp based on guide here: https://www.tutorialspoint.com/c_standard_library/c_function_strftime.htm
+int OutputToFile(double dataArray[], char codeName[], double mean, double median, int ctr) {
+	FILE *fileptr;
+	char fileName[80];
 	
 	if (OUTPUTTYPE == 2) {								//constructs filepath, with final format being "output YYYY-MM-DD HHMMSS.txt (or .csv)"
-		snprintf(fileName, sizeof fileName, "%soutput%d %s.csv", OUTPUTFOLDER, ctr, timestamp);	
+		snprintf(fileName, sizeof fileName, "%soutput%d %s.csv", OUTPUTFOLDER, ctr, GenerateTimestamp());	
 	}
 	else {
-		snprintf(fileName, sizeof fileName, "%soutput%d %s.txt", OUTPUTFOLDER, ctr, timestamp);
+		snprintf(fileName, sizeof fileName, "%soutput%d %s.txt", OUTPUTFOLDER, ctr, GenerateTimestamp());
 	}
 	
 	fileptr = fopen(fileName, "w");						//creates file
@@ -90,19 +94,12 @@ int OutputToFile(double dataArray[], char codeName[], double mean, double median
 int OutputAllData(char fileNames[MAXFILES][MAXFILENAME], double means[MAXFILES], double medians[MAXFILES]) {
 	FILE *fileptr;
 	char fileName[80];
-	time_t rawtime;
-	struct tm *curTime;
-	char *timestamp;
-	
-	time(&rawtime);
-	curTime = localtime(&rawtime);						//sets time to current time, then stores it
-	strftime(timestamp,20,"%Y-%m-%d %H%M%S", curTime);	//constructs timestamp in YYYY-MM-DD HHMMSS format (HH in 24hr form)
 	
 	if (OUTPUTTYPE == 2) {								//constructs filepath, with final format being "output YYYY-MM-DD HHMMSS.txt (or .csv)"
-		snprintf(fileName, sizeof fileName, "%ssummary %s.csv", OUTPUTFOLDER, timestamp);	
+		snprintf(fileName, sizeof fileName, "%ssummary %s.csv", OUTPUTFOLDER, GenerateTimestamp());	
 	}
 	else {
-		snprintf(fileName, sizeof fileName, "%soutput %s.txt", OUTPUTFOLDER, timestamp);
+		snprintf(fileName, sizeof fileName, "%soutput %s.txt", OUTPUTFOLDER, GenerateTimestamp());
 	}
 	
 	fileptr = fopen(fileName, "w");						//creates file
@@ -217,8 +214,10 @@ int main(void) {
 			
         }
     }
-	
+	printf("Building summary...");
+	sleep(1);
 	OutputAllData(fileNames, fileMeans, fileMedians);
+	printf("Done!\033[0;32m\u2713\033[0m\n");
     closedir(dirObj);   								//Close the directory
 	printf("Check the \"Outputs\" folder for results.\n");
 	return 0;
