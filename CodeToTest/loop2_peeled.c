@@ -16,17 +16,14 @@ int main(){
     
     
     x=x2;
-    use(x);
+    //use(x);
     y=x+x;
-    use(y);
+    //use(y);
     z=y*y;
-    use(z);
+    //use(z);
     
-    for(; i<3;i++){
-        
-    }
     
-    while(i<10000){
+    while(i<100000000){
         i++;
     }
     return 42;

@@ -13,13 +13,13 @@ int main(){
     //int x2=rand()%100;
 	int x=10,x2=20;
     int z;
-    while(i<10000){
+    while(i<100000000){
         z=y*y;
-        use(z);
+        //use(z);
         y=x+x;
-        use(y);
+        //use(y);
         x=x2;
-        use(x);
+        //use(x);
 		i++;
     }
     return 42;

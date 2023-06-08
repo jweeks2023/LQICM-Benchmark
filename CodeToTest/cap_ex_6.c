@@ -11,7 +11,7 @@ int main() {
     int f = 8;
     int i = 0;
 
-    while (i < 10000000){
+    while (i < 100000000){
         a = a + c;
         e = 2;
         if (a < 100) c += 10;

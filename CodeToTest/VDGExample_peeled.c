@@ -24,7 +24,7 @@ int main(){
 	
 	a = 1;
 
-	while(i < 10000){
+	while(i < 1000000){
 	
 		j = i - 1;
 		i = j + 2;

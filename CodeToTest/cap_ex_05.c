@@ -9,7 +9,7 @@ int main() {
     int e = 0;
     int f = 8;
 
-    for (int i = 0; i <= 10000000; i++){
+    for (int i = 0; i <= 100000000; i++){
         a = a + c;
         e = 2;
         while (f < b){

@@ -9,7 +9,7 @@ int main(){
 	int y = 5;
 	int a = 12;
 
-	while(i < 10000){
+	while(i < 1000000){
 		j = 0;
 		s = 1;
 		while(j<y){

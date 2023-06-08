@@ -7,7 +7,8 @@
 int main(){
     int i, fact;
     srand(time(NULL));
-    int n=rand()%100000;
+    //int n=rand()%100000;
+	int n = 1000000;
     int x=rand()%1000;
     int j=0; 
     int y=5;

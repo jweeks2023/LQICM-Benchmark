@@ -22,7 +22,7 @@ int main() {
 
     e = 2;
 
-    while (i < 10000000){
+    while (i < 100000000){
         a = a + c;
         if (a < 100) c += 10;
         if (a > 100) c -= 2;
