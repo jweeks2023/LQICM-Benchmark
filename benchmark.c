@@ -14,7 +14,13 @@
 #define OUTPUTFOLDER 	"./Outputs/"		//filepath for folder containing results of benchmark (default: "./Outputs/")
 #define OPTLEVEL 		"O0"				//the level of optimization the code being benchmarked is (default: O0)
 #define MAXFILES		100					//the max number of files the benchmark will check for (default: 100)
-#define MAXFILENAME		100					//the max number of characters in a filename
+#define MAXFILENAME		256					//the max number of characters in a filename
+
+int compare(const void *a, const void *b) {	//Comparison method for quicksort function
+    const char *fileA = (const char *)a;
+    const char *fileB = (const char *)b;
+    return strcmp(fileA, fileB);
+}
 
 //Method to find the median of an array
 double Median(double dataArray[]) {
@@ -173,52 +179,55 @@ int main(void) {
 	char rm[50];
 	snprintf(rm, sizeof rm, "rm %stestExe",INPUTFOLDER);//string that contains the command to remove the exe after benchmark is complete
 	int ctr = 0;
-	char fileNames[MAXFILES][MAXFILENAME];
-	double iterData[MAXFILES][ITERATIONS];
-	double fileMeans[MAXFILES];
-	double fileMedians[MAXFILES];
+	char fileNames[MAXFILES][MAXFILENAME];				//Array of all the file names
+	double iterData[MAXFILES][ITERATIONS];				//Iteration data for files
+	double fileMeans[MAXFILES];							//All the mean times
+	double fileMedians[MAXFILES];						//All the median times
 
     if(dirObj == NULL){         						//If the directory is missing or been removed from the parent directory...
         printf("CodeToTest directory does not exist, or has been removed from the parent directory.");
         return -1;
     }
-	
+
     while((entry=readdir(dirObj))){      				//Read the directory
-		//double iterData[ITERATIONS];					//array to store each iteration's runtime
-		double sum = 0;
         if(strstr(entry->d_name, ".C") || strstr(entry->d_name, ".c")){	//If the file is a C file...
+			strncpy(fileNames[ctr], entry->d_name, MAXFILENAME - 1);	//Save file name
+			fileNames[ctr][MAXFILENAME - 1] = '\0';		//Append empty char to the end
 			ctr++;
-			strcpy(fileNames[ctr - 1], entry->d_name);
-            char file[100];
-            snprintf(file, sizeof file, "%s%s %s%s -%s -o %stestExe", COMPILERPATH, COMPILER, INPUTFOLDER, fileNames[ctr - 1], OPTLEVEL, INPUTFOLDER); //Create the CMD command to compile
-            system(file);    							//Create the executable for the C file
-			
-            printf("Running benchmark for %s...", fileNames[ctr - 1]);
-			fflush(stdout);
-			
-			
-			for(int i = 0; i < ITERATIONS; i++) {
-				clock_gettime(CLOCK_REALTIME, &start);
-				
-				system(exe);							//actually runs the file we compiled
-				
-				clock_gettime(CLOCK_REALTIME, &end);
-				iterData[ctr - 1][i] = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1000000000.0;	//this calculates the runtime in seconds (with 6 decimals of precision)
-				sum += iterData[ctr - 1][i];
-			}
-			fileMeans[ctr - 1] = sum / ITERATIONS;
-			fileMedians[ctr - 1] = Median(iterData[ctr - 1]);
-			printf("Done!\033[0;32m\u2713\033[0m\n");	//prints the green check :)
-			OutputToFile(iterData[ctr - 1], fileNames[ctr - 1], fileMeans[ctr - 1], fileMedians[ctr - 1], ctr);		
-			system(rm);									//Delete the leftover executable
-			
         }
     }
+	closedir(dirObj);   								//Close the directory
+	qsort(fileNames, ctr, MAXFILENAME, compare);		//Sorts list of names
+	
+	for(int i = 0; i < ctr; i++) {
+		double sum = 0;
+		char file[100];
+		snprintf(file, sizeof file, "%s%s %s%s -%s -o %stestExe", COMPILERPATH, COMPILER, INPUTFOLDER, fileNames[i], OPTLEVEL, INPUTFOLDER); //Create the CMD command to compile
+		system(file);    							//Create the executable for the C file
+		
+		printf("Running benchmark for %s...", fileNames[i]);
+		fflush(stdout);
+		
+		for(int j = 0; j < ITERATIONS; j++) {
+			clock_gettime(CLOCK_REALTIME, &start);
+			
+			system(exe);							//actually runs the file we compiled
+			
+			clock_gettime(CLOCK_REALTIME, &end);
+			iterData[i][j] = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1000000000.0;	//this calculates the runtime in seconds (with 6 decimals of precision)
+			sum += iterData[i][j];
+		}
+		fileMeans[i] = sum / ITERATIONS;
+		fileMedians[i] = Median(iterData[i]);
+		printf("Done!\033[0;32m\u2713\033[0m\n");	//prints the green check :)
+		OutputToFile(iterData[i], fileNames[i], fileMeans[i], fileMedians[i], i + 1);		
+		system(rm);									//Delete the leftover executable
+	}
+	
 	printf("Building summary...");
 	sleep(1);
 	OutputAllData(fileNames, fileMeans, fileMedians);
 	printf("Done!\033[0;32m\u2713\033[0m\n");
-    closedir(dirObj);   								//Close the directory
 	printf("Check the \"Outputs\" folder for results.\n");
 	return 0;
 }
