@@ -8,13 +8,16 @@
 
 #define ITERATIONS 		20					//number of times each file is benchmarked (default: 20)
 #define OUTPUTTYPE 		2					//sets if results will be output in a table or plain numbers; 0 = plain, 1 = table, 2 = CSV format
+#define OUTPUTTOGETHER	1					//specifies whether output will be in separate files or in one big file; 0 = false, 1 = true (Only outputs in .csv if true)
 #define COMPILER 		"clang-15"			//specifies what compiler version you're using (default: clang-15)
 #define COMPILERPATH	"../../../usr/bin/"	//filepath of the compiler defined above (default: "../../../usr/bin/")
 #define INPUTFOLDER 	"./CodeToTest/"		//filepath for folder containing files to test (default: " ./CodeToTest/")
 #define OUTPUTFOLDER 	"./Outputs/"		//filepath for folder containing results of benchmark (default: "./Outputs/")
-#define OPTLEVEL 		"O0"				//the level of optimization the code being benchmarked is (default: O0)
-#define MAXFILES		100					//the max number of files the benchmark will check for (default: 100)
-#define MAXFILENAME		256					//the max number of characters in a filename
+#define OPTLEVEL 		"ALL"				//the level of optimization the code being benchmarked is (default: 0)
+#define MAXFILENAME		256					//the max number of characters in a filename (default: 256)
+#define MAXFILEAMN		100					//the max number of files that can be processed by the benchmark (default: 100)
+
+int MAXFILES = strcmp(OPTLEVEL, "ALL") == 0 ? MAXFILEAMN * 4 : MAXFILEAMN;	//specifies how many file runs can occur; based on OPTLEVEL
 
 int compare(const void *a, const void *b) {	//Comparison method for quicksort function
     const char *fileA = (const char *)a;
@@ -40,11 +43,11 @@ double Median(double dataArray[]) {
 char* GenerateTimestamp() {							//generates the timestamp for output files
 	time_t rawtime;
 	struct tm *curTime;
-	char *timestamp;
+	char *timestamp = malloc(21);
 	
 	time(&rawtime);
 	curTime = localtime(&rawtime);						//sets time to current time, then stores it
-	strftime(timestamp,20,"%Y-%m-%d %H%M%S", curTime);	//constructs timestamp in YYYY-MM-DD HHMMSS format (HH in 24hr form)
+	strftime(timestamp, 20,"%Y-%m-%d %H%M%S", curTime);	//constructs timestamp in YYYY-MM-DD HHMMSS format (HH in 24hr form)
 	return timestamp;
 }
 
@@ -52,13 +55,15 @@ char* GenerateTimestamp() {							//generates the timestamp for output files
 int OutputToFile(double dataArray[], char codeName[], double mean, double median, int ctr) {
 	FILE *fileptr;
 	char fileName[80];
+	char *timestamp = GenerateTimestamp();
 	
 	if (OUTPUTTYPE == 2) {								//constructs filepath, with final format being "output YYYY-MM-DD HHMMSS.txt (or .csv)"
-		snprintf(fileName, sizeof fileName, "%soutput%d %s.csv", OUTPUTFOLDER, ctr, GenerateTimestamp());	
+		snprintf(fileName, sizeof fileName, "%soutput%d %s.csv", OUTPUTFOLDER, ctr, timestamp);	
 	}
 	else {
-		snprintf(fileName, sizeof fileName, "%soutput%d %s.txt", OUTPUTFOLDER, ctr, GenerateTimestamp());
+		snprintf(fileName, sizeof fileName, "%soutput%d %s.txt", OUTPUTFOLDER, ctr, timestamp);
 	}
+	free(timestamp);
 	
 	fileptr = fopen(fileName, "w");						//creates file
 	if (fileptr == NULL) {
@@ -97,16 +102,18 @@ int OutputToFile(double dataArray[], char codeName[], double mean, double median
 	return 1;
 }
 
-int OutputAllData(char fileNames[MAXFILES][MAXFILENAME], double means[MAXFILES], double medians[MAXFILES]) {
+int OutputSummary(char fileNames[MAXFILES][MAXFILENAME], double means[MAXFILES], double medians[MAXFILES], int ctr) {
 	FILE *fileptr;
 	char fileName[80];
-	
+	char *timestamp = GenerateTimestamp();
+
 	if (OUTPUTTYPE == 2) {								//constructs filepath, with final format being "output YYYY-MM-DD HHMMSS.txt (or .csv)"
-		snprintf(fileName, sizeof fileName, "%ssummary %s.csv", OUTPUTFOLDER, GenerateTimestamp());	
+		snprintf(fileName, sizeof fileName, "%ssummary %s.csv", OUTPUTFOLDER, timestamp);	
 	}
 	else {
-		snprintf(fileName, sizeof fileName, "%soutput %s.txt", OUTPUTFOLDER, GenerateTimestamp());
+		snprintf(fileName, sizeof fileName, "%ssummary %s.txt", OUTPUTFOLDER, timestamp);
 	}
+	free(timestamp);
 	
 	fileptr = fopen(fileName, "w");						//creates file
 	if (fileptr == NULL) {
@@ -125,19 +132,19 @@ int OutputAllData(char fileNames[MAXFILES][MAXFILENAME], double means[MAXFILES],
 	}
 	else if(OUTPUTTYPE == 2) {								//outputs results of benchmark in CSV format
 		fprintf(fileptr, "Filename,");
-		for(int i = 0; i < ITERATIONS; i++) {
+		for(int i = 0; i < ctr; i++) {
 			if(fileNames[i][0] != '\0') {
 				fprintf(fileptr, "%s,", fileNames[i]);
 			}
 		}
 		fprintf(fileptr, "\nAvg Runtime (sec),");
-		for(int i = 0; i < ITERATIONS; i++) {
+		for(int i = 0; i < ctr; i++) {
 			if(means[i] != 0) {
 				fprintf(fileptr, "%f,", means[i]);
 			}
 		}
 		fprintf(fileptr, "\nMedian Runtime (sec),");
-		for(int i = 0; i < ITERATIONS; i++) {
+		for(int i = 0; i < ctr; i++) {
 			if(medians[i] != 0) {
 				fprintf(fileptr, "%f,", medians[i]);
 			}
@@ -145,19 +152,19 @@ int OutputAllData(char fileNames[MAXFILES][MAXFILENAME], double means[MAXFILES],
 	}
 	else {													//outputs results of benchmark in plain format
 		fprintf(fileptr, "Filename\t\t");
-		for(int i = 0; i < ITERATIONS; i++) {
+		for(int i = 0; i < ctr; i++) {
 			if(fileNames[i][0] != '\0') {
 				fprintf(fileptr, "%s\t", fileNames[i]);
 			}
 		}
 		fprintf(fileptr, "\nAvg Runtime (sec)\t");
-		for(int i = 0; i < ITERATIONS; i++) {
+		for(int i = 0; i < ctr; i++) {
 			if(means[i] != 0) {
 				fprintf(fileptr, "%f\t", means[i]);
 			}
 		}
 		fprintf(fileptr, "\nMedian Runtime (sec)\t");
-		for(int i = 0; i < ITERATIONS; i++) {
+		for(int i = 0; i < ctr; i++) {
 			if(medians[i] != 0) {
 				fprintf(fileptr, "%f\t", medians[i]);
 			}
@@ -165,6 +172,58 @@ int OutputAllData(char fileNames[MAXFILES][MAXFILENAME], double means[MAXFILES],
 	}
 
 	fclose(fileptr);
+	return 1;
+}
+
+int OutputAll(char fileNames[MAXFILES][MAXFILENAME], double iterData[MAXFILES][ITERATIONS], double means[MAXFILES], double medians[MAXFILES], int ctr) {
+	FILE *fileptr;
+	char fileName[80];
+	char *timestamp = GenerateTimestamp();
+	snprintf(fileName, sizeof fileName, "%soverall %s.csv", OUTPUTFOLDER, timestamp);
+	free(timestamp);
+
+	fileptr = fopen(fileName, "w");						//creates file
+	if (fileptr == NULL) {
+		printf("File output failed.");
+		return 0;
+	}
+
+	fprintf(fileptr, "Filename,");
+	for(int i = 0; i < ctr; i+=4) {
+		if(fileNames[i][0] != '\0') {
+			fprintf(fileptr, "%s,,,,", fileNames[i]);
+		}
+	}
+	
+	fprintf(fileptr, "\nOpt Level,");
+	for(int i = 0; i < ctr; i+=4) {
+		if(fileNames[i][0] != '\0') {
+			fprintf(fileptr, "O0,O1,O2,O3,");
+		}
+	}
+	
+	for(int i = 0; i < ITERATIONS; i++) {
+		fprintf(fileptr, "\n%d,", i + 1);
+		for(int j = 0; j < ctr; j++) {
+			if(iterData[j][0] != 0) {
+				fprintf(fileptr, "%f,", iterData[j][i]);
+			}
+		}
+	}
+	
+	fprintf(fileptr, "\nAvg Runtime (sec),");
+	for(int i = 0; i < ctr; i++) {
+		if(means[i] != 0) {
+			fprintf(fileptr, "%f,", means[i]);
+		}
+	}
+
+	fprintf(fileptr, "\nMedian Runtime (sec),");
+	for(int i = 0; i < ctr; i++) {
+		if(medians[i] != 0) {
+			fprintf(fileptr, "%f,", medians[i]);
+		}
+	}
 	return 1;
 }
 
@@ -179,11 +238,12 @@ int main(void) {
 	char rm[50];
 	snprintf(rm, sizeof rm, "rm %stestExe",INPUTFOLDER);//string that contains the command to remove the exe after benchmark is complete
 	int ctr = 0;
+	
 	char fileNames[MAXFILES][MAXFILENAME];				//Array of all the file names
 	double iterData[MAXFILES][ITERATIONS];				//Iteration data for files
 	double fileMeans[MAXFILES];							//All the mean times
 	double fileMedians[MAXFILES];						//All the median times
-
+	
     if(dirObj == NULL){         						//If the directory is missing or been removed from the parent directory...
         printf("CodeToTest directory does not exist, or has been removed from the parent directory.");
         return -1;
@@ -191,9 +251,18 @@ int main(void) {
 
     while((entry=readdir(dirObj))){      				//Read the directory
         if(strstr(entry->d_name, ".C") || strstr(entry->d_name, ".c")){	//If the file is a C file...
-			strncpy(fileNames[ctr], entry->d_name, MAXFILENAME - 1);	//Save file name
-			fileNames[ctr][MAXFILENAME - 1] = '\0';		//Append empty char to the end
-			ctr++;
+			if(strcmp(OPTLEVEL, "ALL") == 0) {
+				for(int i = 0; i < 4; i++) {
+					strncpy(fileNames[ctr], entry->d_name, MAXFILENAME - 1);	//Save file name
+					fileNames[ctr][MAXFILENAME - 1] = '\0';		//Append empty char to the end
+					ctr++;
+				}
+			}
+			else {
+				strncpy(fileNames[ctr], entry->d_name, MAXFILENAME - 1);	//Save file name
+				fileNames[ctr][MAXFILENAME - 1] = '\0';		//Append empty char to the end
+				ctr++;
+			}
         }
     }
 	closedir(dirObj);   								//Close the directory
@@ -201,11 +270,14 @@ int main(void) {
 	
 	for(int i = 0; i < ctr; i++) {
 		double sum = 0;
+		char opt[3];
+		snprintf(opt, sizeof(opt), "O%d", strcmp(OPTLEVEL, "ALL") == 0 ? i % 4 : atoi(OPTLEVEL));
+		
 		char file[100];
-		snprintf(file, sizeof file, "%s%s %s%s -%s -o %stestExe", COMPILERPATH, COMPILER, INPUTFOLDER, fileNames[i], OPTLEVEL, INPUTFOLDER); //Create the CMD command to compile
+		snprintf(file, sizeof file, "%s%s %s%s -%s -o %stestExe", COMPILERPATH, COMPILER, INPUTFOLDER, fileNames[i], opt, INPUTFOLDER); //Create the CMD command to compile
 		system(file);    							//Create the executable for the C file
 		
-		printf("Running benchmark for %s...", fileNames[i]);
+		printf("Running benchmark for %s with Opt Level %s...", fileNames[i], opt);
 		fflush(stdout);
 		
 		for(int j = 0; j < ITERATIONS; j++) {
@@ -220,14 +292,17 @@ int main(void) {
 		fileMeans[i] = sum / ITERATIONS;
 		fileMedians[i] = Median(iterData[i]);
 		printf("Done!\033[0;32m\u2713\033[0m\n");	//prints the green check :)
-		OutputToFile(iterData[i], fileNames[i], fileMeans[i], fileMedians[i], i + 1);		
+		if(OUTPUTTOGETHER != 1) {
+			OutputToFile(iterData[i], fileNames[i], fileMeans[i], fileMedians[i], i + 1);	
+		}
 		system(rm);									//Delete the leftover executable
 	}
 	
+	OutputAll(fileNames, iterData, fileMeans, fileMedians, ctr);
 	printf("Building summary...");
-	sleep(1);
-	OutputAllData(fileNames, fileMeans, fileMedians);
+	OutputSummary(fileNames, fileMeans, fileMedians, ctr);
 	printf("Done!\033[0;32m\u2713\033[0m\n");
 	printf("Check the \"Outputs\" folder for results.\n");
+	
 	return 0;
 }
