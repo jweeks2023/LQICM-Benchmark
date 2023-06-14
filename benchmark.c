@@ -8,12 +8,12 @@
 
 #define ITERATIONS 		20					//number of times each file is benchmarked (default: 20)
 #define OUTPUTTYPE 		2					//sets if results will be output in a table or plain numbers; 0 = plain, 1 = table, 2 = CSV format
-#define OUTPUTTOGETHER	1					//specifies whether output will be in separate files or in one big file; 0 = false, 1 = true (Only outputs in .csv if true)
+#define OUTPUTTOGETHER	false					//specifies whether output will be in separate files or in one big file (default: true) (Only outputs in .csv if true)
 #define COMPILER 		"clang-15"			//specifies what compiler version you're using (default: clang-15)
 #define COMPILERPATH	"../../../usr/bin/"	//filepath of the compiler defined above (default: "../../../usr/bin/")
 #define INPUTFOLDER 	"./CodeToTest/"		//filepath for folder containing files to test (default: " ./CodeToTest/")
 #define OUTPUTFOLDER 	"./Outputs/"		//filepath for folder containing results of benchmark (default: "./Outputs/")
-#define OPTLEVEL 		"ALL"				//the level of optimization the code being benchmarked is (default: 0)
+#define OPTLEVEL 		"0"				//the level of optimization the code being benchmarked is (default: 0)
 #define MAXFILENAME		256					//the max number of characters in a filename (default: 256)
 #define MAXFILEAMN		100					//the max number of files that can be processed by the benchmark (default: 100)
 
@@ -196,9 +196,15 @@ int OutputAll(char fileNames[MAXFILES][MAXFILENAME], double iterData[MAXFILES][I
 	}
 	
 	fprintf(fileptr, "\nOpt Level,");
-	for(int i = 0; i < ctr; i+=4) {
+	for(int i = 0; i < ctr; i++) {
 		if(fileNames[i][0] != '\0') {
-			fprintf(fileptr, "O0,O1,O2,O3,");
+			if(strcmp(OPTLEVEL, "ALL") == 0) {
+				fprintf(fileptr, "O0,O1,O2,O3,");
+				i += 3;
+			}
+			else {
+				fprintf(fileptr, "O%d", atoi(OPTLEVEL));
+			}
 		}
 	}
 	
