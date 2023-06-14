@@ -181,6 +181,36 @@ Mean:, 0.443335
 Median:, 0.443650
 ```
 
+When `OUTPUTTOGETHER` is `true`:
+```
+//In the output file
+
+Filename,demo.c,
+Opt Level,O0
+1,0.524322,
+2,0.531562,
+3,0.538903,
+4,0.550172,
+5,0.552873,
+6,0.553342,
+7,0.557133,
+8,0.571227,
+9,0.573769,
+10,0.576032,
+11,0.594302,
+12,0.595006,
+13,0.609555,
+14,0.624552,
+15,0.642659,
+16,0.649558,
+17,0.662863,
+18,0.717895,
+19,0.723979,
+20,0.752221,
+Avg Runtime (sec),0.605096,
+Median Runtime (sec),0.594654,
+```
+
 ## Common Bugs
 `sh: 1: [OBJECT OR FILE PATH]: not found` - Most likely the compilation of the C file being benchmark failed. Check the `COMPILERPATH` parameter to make sure it points to the same folder `COMPILER` exists in.
 
