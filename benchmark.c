@@ -191,7 +191,12 @@ int OutputAll(char fileNames[MAXFILES][MAXFILENAME], double iterData[MAXFILES][I
 	fprintf(fileptr, "Filename,");
 	for(int i = 0; i < ctr; i+=4) {
 		if(fileNames[i][0] != '\0') {
-			fprintf(fileptr, "%s,,,,", fileNames[i]);
+			if(strcmp(OPTLEVEL, "ALL") == 0) {
+				fprintf(fileptr, "%s,,,,", fileNames[i]);
+			}
+			else {
+				fprintf(fileptr, "%s,", fileNames[i]);
+			}
 		}
 	}
 	
@@ -203,7 +208,7 @@ int OutputAll(char fileNames[MAXFILES][MAXFILENAME], double iterData[MAXFILES][I
 				i += 3;
 			}
 			else {
-				fprintf(fileptr, "O%d", atoi(OPTLEVEL));
+				fprintf(fileptr, "O%d,", atoi(OPTLEVEL));
 			}
 		}
 	}
