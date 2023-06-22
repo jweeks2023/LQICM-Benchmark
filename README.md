@@ -1,6 +1,6 @@
 # LQICM-Benchmark
 
-A repo containing the benchmark program used in the Loop Quasi-Invariant Code Motion (LQICM) senior capstone project.
+A repo containing the benchmark program used in the Loop Quasi-Invariant Code Motion (LQICM) project.
 
 ## Content
 
@@ -72,7 +72,8 @@ Expected output:
 >>> benchmark.c  CodeToTest  LICENSE.md  Outputs  README.md  run.sh
 ```
 
-3. Open file in text editor and chang parameters
+3. Open file in text editor and change parameters
+
 ```C
 //In the benchmark.c file
 
@@ -101,7 +102,7 @@ Expected Output from Console:
 >>> Building summary...Done!✓
 >>> Check the "Outputs" folder for results.
 ```
-Expected Output in File:
+Example of expected Output in File:
 When `OUTPUTTYPE` is `0`:
 ```
 //In the output file
@@ -226,8 +227,8 @@ Median Runtime (sec),0.594654,
 
 ## Common Bugs
 
-`sh: 1: [OBJECT OR FILE PATH]: not found` - Most likely the compilation of the C file being benchmark failed. Check the `COMPILERPATH` parameter to make sure it points to the same folder `COMPILER` exists in.
+- `sh: 1: [OBJECT OR FILE PATH]: not found` - Most likely the compilation of the C file being benchmark failed. Check the `COMPILERPATH` parameter to make sure it points to the same folder `COMPILER` exists in.
 
-Any error message that displays repeatedly in rapid succession - This is most likely an error with your C file. Make sure you can compile and run your code through your compiler before putting it in the `CodeToTest` folder.
+- Any error message that displays repeatedly in rapid succession - This is most likely an error with your C file. Make sure you can compile and run your code through your compiler before putting it in the `CodeToTest` folder.
 
-`Command '[COMPILER]' not found, but can be installed with:` - This means that you are referencing a compiler that you do not have installed. This issue is common when you install LLVM, as many commands require the command followed by `-[VERSION NUMBER]`. This is why the default value for `COMPILER` is `clang-15`. Please verify you've installed a C compiler and that you are referencing the correct version in the command.
+- `Command '[COMPILER]' not found, but can be installed with:` - This means that you are referencing a compiler that you do not have installed. This issue is common when you install LLVM, as many commands require the command followed by `-[VERSION NUMBER]`. This is why the default value for `COMPILER` is `clang-15`. Please verify you've installed a C compiler and that you are referencing the correct version in the command.
