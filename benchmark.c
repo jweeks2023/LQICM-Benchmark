@@ -8,12 +8,12 @@
 
 #define ITERATIONS 		20					//number of times each file is benchmarked (default: 20)
 #define OUTPUTTYPE 		2					//sets if results will be output in a table or plain numbers; 0 = plain, 1 = table, 2 = CSV format
-#define OUTPUTTOGETHER	false					//specifies whether output will be in separate files or in one big file (default: true) (Only outputs in .csv if true)
+#define OUTPUTTOGETHER	true					//specifies whether output will be in separate files or in one big file (default: true) (Only outputs in .csv if true)
 #define COMPILER 		"clang-15"			//specifies what compiler version you're using (default: clang-15)
 #define COMPILERPATH	"../../../usr/bin/"	//filepath of the compiler defined above (default: "../../../usr/bin/")
 #define INPUTFOLDER 	"./CodeToTest/"		//filepath for folder containing files to test (default: " ./CodeToTest/")
 #define OUTPUTFOLDER 	"./Outputs/"		//filepath for folder containing results of benchmark (default: "./Outputs/")
-#define OPTLEVEL 		"0"				//the level of optimization the code being benchmarked is (default: 0)
+#define OPTLEVEL 		"ALL"				//the level of optimization the code being benchmarked is (default: 0)
 #define MAXFILENAME		256					//the max number of characters in a filename (default: 256)
 #define MAXFILEAMN		100					//the max number of files that can be processed by the benchmark (default: 100)
 
@@ -238,6 +238,25 @@ int OutputAll(char fileNames[MAXFILES][MAXFILENAME], double iterData[MAXFILES][I
 	return 1;
 }
 
+int ValidCheck(char file[MAXFILENAME]) {				//Checks if file is valid program
+	char cmd[MAXFILENAME + 19 + sizeof(COMPILERPATH) + sizeof(COMPILER) + sizeof(INPUTFOLDER)];
+	snprintf(cmd, sizeof(cmd), "%s%s -Wall -Werror -c %s%s 2>&1", COMPILERPATH, COMPILER, INPUTFOLDER, file);
+	FILE* output = popen(cmd, "r");						//First checks if it compiles
+	if(!output) {										//If not, return -1
+		return -1;
+	}
+	
+	char buffer[256];									//Otherwise check output of compilation
+	char* result = fgets(buffer, sizeof(buffer), output);
+	pclose(output);
+														//If it contains error or warning, return -1
+	if(result && (strstr(buffer, "error") != NULL || strstr(buffer, "warning") != NULL)) {
+		return -1;
+	}
+	
+	return 0;											//All other (valid) programs return 0
+}
+
 //benchmark.c
 int main(void) {
 	struct timespec start, end;							//timespec objects used to mark start and end times
@@ -262,7 +281,13 @@ int main(void) {
 
     while((entry=readdir(dirObj))){      				//Read the directory
         if(strstr(entry->d_name, ".C") || strstr(entry->d_name, ".c")){	//If the file is a C file...
-			if(strcmp(OPTLEVEL, "ALL") == 0) {
+			char file[MAXFILENAME];
+			strncpy(file, entry->d_name, MAXFILENAME - 1);
+			int res = ValidCheck(file);
+			if(res == -1) {
+				printf("File skipped due to errors/warnings\n");
+			}
+			else if(strcmp(OPTLEVEL, "ALL") == 0) {
 				for(int i = 0; i < 4; i++) {
 					strncpy(fileNames[ctr], entry->d_name, MAXFILENAME - 1);	//Save file name
 					fileNames[ctr][MAXFILENAME - 1] = '\0';		//Append empty char to the end
@@ -279,6 +304,7 @@ int main(void) {
 	closedir(dirObj);   								//Close the directory
 	qsort(fileNames, ctr, MAXFILENAME, compare);		//Sorts list of names
 	
+	
 	for(int i = 0; i < ctr; i++) {
 		double sum = 0;
 		char opt[3];
@@ -292,6 +318,8 @@ int main(void) {
 		fflush(stdout);
 		
 		for(int j = 0; j < ITERATIONS; j++) {
+			printf("%d", j + 1);
+			fflush(stdout);
 			clock_gettime(CLOCK_REALTIME, &start);
 			
 			system(exe);							//actually runs the file we compiled
@@ -306,6 +334,7 @@ int main(void) {
 		if(OUTPUTTOGETHER != 1) {
 			OutputToFile(iterData[i], fileNames[i], fileMeans[i], fileMedians[i], i + 1);	
 		}
+		
 		system(rm);									//Delete the leftover executable
 	}
 	
