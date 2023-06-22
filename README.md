@@ -69,7 +69,7 @@ ls
 ```
 Expected output: 
 ```
->>> CodeToTest  LICENSE.md  Outputs  README.md  benchmark  benchmark.c
+>>> benchmark.c  CodeToTest  LICENSE.md  Outputs  README.md  run.sh
 ```
 
 3. Open file in text editor and chang parameters
