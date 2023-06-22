@@ -65,7 +65,7 @@ git clone https://github.com/jweeks2023/LQICM-Benchmark.git
 2. Navigate into the folder and check contents:
 ```
 cd LQICM-Benchmark
-dir
+ls
 ```
 Expected output: 
 ```
