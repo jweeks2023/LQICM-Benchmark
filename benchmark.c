@@ -344,5 +344,5 @@ int main(void) {
 	printf("Done!\033[0;32m\u2713\033[0m\n");
 	printf("Check the \"Outputs\" folder for results.\n");
 	
-	return 0;
+	return EXIT_SUCCESS;
 }

@@ -1,7 +1,9 @@
 # LQICM-Benchmark
-A repo containing the benchmark program used in the Loop Quasi-Invariant Code Motion (LQICM) senior capstone project.
 
-## Contents
+A repo containing the benchmark program used in the Loop Quasi-Invariant Code Motion (LQICM) project.
+
+## Content
+
 - License.md: Legal stuff
 - README.md: This File!
 - benchmark.c: The benchmarking code in question.
@@ -9,13 +11,16 @@ A repo containing the benchmark program used in the Loop Quasi-Invariant Code Mo
 - Outputs Folder: Destination folder for outputted benchmark results
 
 ## Prerequisites
+
 - A computer/virtual machine running Linux
     - Note: Further testing needed on other operating systems before I can confirm that it's functional on Windows/Mac
 - A C compiler (LLVM or GCC recommended)
 - Code that you want to benchmark
 
-## How To Use:
+## How To Use
+
 ### Set Up
+
 1. Download/clone the repo to the desired location.
 2. Open the `LQICM-Benchmark` folder to make sure all the files from the Contents section are there.
 3. If desired, open the `benchmark.c` file in a text editor and change the parameters at the top of the program.
@@ -34,17 +39,25 @@ A repo containing the benchmark program used in the Loop Quasi-Invariant Code Mo
 4. Compile `benchmark.c`.
     - Note: We recommend using clang since it comes with LLVM and is more efficient than gcc. Ultimately, you can use any C compiler you like.
     - Example using clang-15: `clang-15 benchmark.c -o benchmark -lm`.
+
 ### Inserting Code
+
 1. In your file explorer, navigate to the `CodeToTest` folder.
 2. Insert your own test code as .c files in the folder. Each C file will be timed separately, and will output in separate output files.
     - Note: Make sure your code compiles and runs as expected before attempting to benchmark it. Failure to do so may cause inaccurate benchmark results. An example file is provided in the `CodeToTest` folder.
+
 ### Running the Benchmark
+
 1. Make sure you're in the `Benchmark` folder and run the benchmark using the following command: `./benchmark`.
 2. View results in the `Outputs` folder.
+
 ### Reviewing Results
+
 - Output files will be in the format `[output|overall|summary] YYYY-MM-DD HHMMSS.txt`. The title of the C program that is timed is contained at the top of the file.
 - Data will be in seconds, with 6 decimals of precision.
+
 ### An Example Following The Steps Above
+
 1. Clone the repository:
 ```
 git clone https://github.com/jweeks2023/LQICM-Benchmark.git
@@ -52,14 +65,15 @@ git clone https://github.com/jweeks2023/LQICM-Benchmark.git
 2. Navigate into the folder and check contents:
 ```
 cd LQICM-Benchmark
-dir
+ls
 ```
 Expected output: 
 ```
->>> CodeToTest  LICENSE.md  Outputs  README.md  benchmark  benchmark.c
+>>> benchmark.c  CodeToTest  LICENSE.md  Outputs  README.md  run.sh
 ```
 
-3. Open file in text editor and chang parameters
+3. Open file in text editor and change parameters
+
 ```C
 //In the benchmark.c file
 
@@ -88,7 +102,7 @@ Expected Output from Console:
 >>> Building summary...Done!✓
 >>> Check the "Outputs" folder for results.
 ```
-Expected Output in File:
+Example of expected Output in File:
 When `OUTPUTTYPE` is `0`:
 ```
 //In the output file
@@ -212,10 +226,9 @@ Median Runtime (sec),0.594654,
 ```
 
 ## Common Bugs
-`sh: 1: [OBJECT OR FILE PATH]: not found` - Most likely the compilation of the C file being benchmark failed. Check the `COMPILERPATH` parameter to make sure it points to the same folder `COMPILER` exists in.
 
-Any error message that displays repeatedly in rapid succession - This is most likely an error with your C file. Make sure you can compile and run your code through your compiler before putting it in the `CodeToTest` folder.
+- `sh: 1: [OBJECT OR FILE PATH]: not found` - Most likely the compilation of the C file being benchmark failed. Check the `COMPILERPATH` parameter to make sure it points to the same folder `COMPILER` exists in.
 
-`Command '[COMPILER]' not found, but can be installed with:` - This means that you are referencing a compiler that you do not have installed. This issue is common when you install LLVM, as many commands require the command followed by `-[VERSION NUMBER]`. This is why the default value for `COMPILER` is `clang-15`. Please verify you've installed a C compiler and that you are referencing the correct version in the command.
+- Any error message that displays repeatedly in rapid succession - This is most likely an error with your C file. Make sure you can compile and run your code through your compiler before putting it in the `CodeToTest` folder.
 
-Created by Jason Weeks, Justice Howley, and Ian Yelle, 2023 
+- `Command '[COMPILER]' not found, but can be installed with:` - This means that you are referencing a compiler that you do not have installed. This issue is common when you install LLVM, as many commands require the command followed by `-[VERSION NUMBER]`. This is why the default value for `COMPILER` is `clang-15`. Please verify you've installed a C compiler and that you are referencing the correct version in the command.
