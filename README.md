@@ -227,7 +227,7 @@ Median Runtime (sec),0.594654,
 
 ## Common Bugs
 
-- `sh: 1: [OBJECT OR FILE PATH]: not found` - Most likely the compilation of the C file being benchmark failed. Check the `COMPILERPATH` parameter to make sure it points to the same folder `COMPILER` exists in.
+- `sh: 1: [OBJECT OR FILE PATH]: not found` - Most likely the compilation of the C file being benchmarked failed. Check the `COMPILERPATH` parameter to make sure it points to the same folder `COMPILER` exists in.
 
 - Any error message that displays repeatedly in rapid succession - This is most likely an error with your C file. Make sure you can compile and run your code through your compiler before putting it in the `CodeToTest` folder.
 
