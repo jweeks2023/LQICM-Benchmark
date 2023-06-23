@@ -8,7 +8,7 @@
 
 #define ITERATIONS 		20					//number of times each file is benchmarked (default: 20)
 #define OUTPUTTYPE 		2					//sets if results will be output in a table or plain numbers; 0 = plain, 1 = table, 2 = CSV format
-#define OUTPUTTOGETHER	true					//specifies whether output will be in separate files or in one big file (default: true) (Only outputs in .csv if true)
+#define OUTPUTTOGETHER	false					//specifies whether output will be in separate files or in one big file (default: true) (Only outputs in .csv if true)
 #define COMPILER 		"clang-15"			//specifies what compiler version you're using (default: clang-15)
 #define COMPILERPATH	"../../../usr/bin/"	//filepath of the compiler defined above (default: "../../../usr/bin/")
 #define INPUTFOLDER 	"./CodeToTest/"		//filepath for folder containing files to test (default: " ./CodeToTest/")
@@ -52,16 +52,23 @@ char* GenerateTimestamp() {							//generates the timestamp for output files
 }
 
 //Grabbing timestamp based on guide here: https://www.tutorialspoint.com/c_standard_library/c_function_strftime.htm
-int OutputToFile(double dataArray[], char codeName[], double mean, double median, int ctr) {
+int OutputSingle(double dataArray[], char codeName[], double mean, double median, int ctr) {
 	FILE *fileptr;
-	char fileName[80];
+	char fileName[sizeof(OUTPUTFOLDER) + MAXFILENAME + 34];
 	char *timestamp = GenerateTimestamp();
 	
+	for (int i = MAXFILENAME - 1; i >= 0; i--) {
+        if (codeName[i] == '.') {
+            codeName[i] = '\0';  // Replace period with null terminator
+			break;
+        }
+    }
+	
 	if (OUTPUTTYPE == 2) {								//constructs filepath, with final format being "output YYYY-MM-DD HHMMSS.txt (or .csv)"
-		snprintf(fileName, sizeof fileName, "%soutput%d %s.csv", OUTPUTFOLDER, ctr, timestamp);	
+		snprintf(fileName, sizeof fileName, "%soutput%d %s %s.csv", OUTPUTFOLDER, ctr, codeName, timestamp);	
 	}
 	else {
-		snprintf(fileName, sizeof fileName, "%soutput%d %s.txt", OUTPUTFOLDER, ctr, timestamp);
+		snprintf(fileName, sizeof fileName, "%soutput%d %s %s.txt", OUTPUTFOLDER, ctr, codeName, timestamp);
 	}
 	free(timestamp);
 	
@@ -104,7 +111,7 @@ int OutputToFile(double dataArray[], char codeName[], double mean, double median
 
 int OutputSummary(char fileNames[MAXFILES][MAXFILENAME], double means[MAXFILES], double medians[MAXFILES], int ctr) {
 	FILE *fileptr;
-	char fileName[80];
+	char fileName[sizeof(OUTPUTFOLDER) + 25];
 	char *timestamp = GenerateTimestamp();
 
 	if (OUTPUTTYPE == 2) {								//constructs filepath, with final format being "output YYYY-MM-DD HHMMSS.txt (or .csv)"
@@ -177,7 +184,7 @@ int OutputSummary(char fileNames[MAXFILES][MAXFILENAME], double means[MAXFILES],
 
 int OutputAll(char fileNames[MAXFILES][MAXFILENAME], double iterData[MAXFILES][ITERATIONS], double means[MAXFILES], double medians[MAXFILES], int ctr) {
 	FILE *fileptr;
-	char fileName[80];
+	char fileName[sizeof(OUTPUTFOLDER) + 35];
 	char *timestamp = GenerateTimestamp();
 	snprintf(fileName, sizeof fileName, "%soverall %s.csv", OUTPUTFOLDER, timestamp);
 	free(timestamp);
@@ -263,9 +270,9 @@ int main(void) {
 	struct dirent *entry;   							//Will grab info on things found in the directory
     DIR *dirObj;           								//The directory object
 	dirObj = opendir(INPUTFOLDER);     					//Opens the directory
-	char exe[50];
+	char exe[sizeof(INPUTFOLDER) + 10];
 	snprintf(exe, sizeof exe, "%stestExe", INPUTFOLDER);//string that contains the command to run the generated executable during the benchmark
-	char rm[50];
+	char rm[sizeof(INPUTFOLDER) + 12];
 	snprintf(rm, sizeof rm, "rm %stestExe",INPUTFOLDER);//string that contains the command to remove the exe after benchmark is complete
 	int ctr = 0;
 	
@@ -332,7 +339,7 @@ int main(void) {
 		fileMedians[i] = Median(iterData[i]);
 		printf("Done!\033[0;32m\u2713\033[0m\n");	//prints the green check :)
 		if(OUTPUTTOGETHER != 1) {
-			OutputToFile(iterData[i], fileNames[i], fileMeans[i], fileMedians[i], i + 1);	
+			OutputSingle(iterData[i], fileNames[i], fileMeans[i], fileMedians[i], i + 1);	
 		}
 		
 		system(rm);									//Delete the leftover executable
