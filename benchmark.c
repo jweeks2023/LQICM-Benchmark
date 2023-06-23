@@ -276,7 +276,7 @@ int main(void) {
 	
     if(dirObj == NULL){         						//If the directory is missing or been removed from the parent directory...
         printf("CodeToTest directory does not exist, or has been removed from the parent directory.");
-        return -1;
+        return EXIT_FAILURE;
     }
 
     while((entry=readdir(dirObj))){      				//Read the directory
@@ -310,7 +310,7 @@ int main(void) {
 		char opt[3];
 		snprintf(opt, sizeof(opt), "O%d", strcmp(OPTLEVEL, "ALL") == 0 ? i % 4 : atoi(OPTLEVEL));
 		
-		char file[100];
+		char file[sizeof(COMPILERPATH) + sizeof(COMPILER) + (sizeof(INPUTFOLDER) * 2) + MAXFILENAME + 18];
 		snprintf(file, sizeof file, "%s%s %s%s -%s -o %stestExe", COMPILERPATH, COMPILER, INPUTFOLDER, fileNames[i], opt, INPUTFOLDER); //Create the CMD command to compile
 		system(file);    							//Create the executable for the C file
 		
