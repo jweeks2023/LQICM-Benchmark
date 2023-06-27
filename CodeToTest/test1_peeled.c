@@ -3,15 +3,16 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<time.h>
+#include<limits.h>
 
 int main(){
-    int i, fact;
+    volatile int i, fact;
     srand(time(NULL));
     //int n=rand()%10000;
-	int n = 100000000;
-    int a=rand()%100;
-    int j=0; 
-    int y=rand()%100;
+	volatile int n = INT_MAX;
+    volatile int a=rand()%100;
+    volatile int j=INT_MIN; 
+    volatile int y=rand()%100;
 	
 	
     y=a+1;

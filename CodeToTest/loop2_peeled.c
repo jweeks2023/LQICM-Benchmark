@@ -1,18 +1,19 @@
 //From Thomas Ruby LQICM Pass Test Cases
 
 #include <stdio.h>
+#include <limits.h>
 
 void use(int y){
     printf("y=%d\n",y);
 }
 
 int main(){
-    int i=0,y=0;
+    volatile int i=INT_MIN,y=0;
     //srand(time(NULL));
     //int x=rand()%100;
     //int x2=rand()%100;
-    int x=10,x2=20;
-    int z;
+    volatile int x=10,x2=20;
+    volatile int z;
     
     
     x=x2;
@@ -23,7 +24,7 @@ int main(){
     //use(z);
     
     
-    while(i<100000000){
+    while(i<INT_MAX){
         i++;
     }
     return 42;

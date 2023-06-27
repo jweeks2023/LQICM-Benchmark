@@ -3,16 +3,17 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<time.h>
+#include<limits.h>
 
 int main(){
-    int i, fact;
+    volatile int i, fact;
     srand(time(NULL));
     //int n=rand()%100000;
-	int n = 1000000;
-    int x=rand()%1000;
-    int j=0; 
-    int y=5;
-    int a=5;
+	volatile int n = 500000000;
+    volatile int x=rand()%1000;
+    volatile int j=0; 
+    volatile int y=5;
+    volatile int a=5;
     while(j<n){
         fact=1;
         i=1;
