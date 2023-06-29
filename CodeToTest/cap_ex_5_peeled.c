@@ -13,7 +13,13 @@ int main() {
 	
     e = 2;
 	e = 5;
+	while (f < b){
+        f++;
+    }
 	e = 32;
+	for (; c < 2*d; c++){
+		
+    }
 
     for (int i = INT_MIN; i <= INT_MAX - 1; i++){
         a = a + c;
