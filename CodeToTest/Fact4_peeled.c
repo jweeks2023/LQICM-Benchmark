@@ -9,7 +9,7 @@ int main(){
     volatile int i, fact;
     srand(time(NULL));
     //int n=rand()%100000;
-	volatile int n = 500000000;
+	volatile int n = 10000000;
     volatile int x=rand()%1000;
     volatile int j=0; 
     volatile int y=5;
