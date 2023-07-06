@@ -27,5 +27,5 @@ int main(){
     while(i<INT_MAX){
         i++;
     }
-    return 42;
+    return z;
 }

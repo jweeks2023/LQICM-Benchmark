@@ -6,7 +6,7 @@
 #include<limits.h>
 
 int main(){
-    volatile int i, fact;
+    volatile int i = 0;
     srand(time(NULL));
     //int n=rand()%10000;
 	volatile int n = INT_MAX;

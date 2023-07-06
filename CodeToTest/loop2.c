@@ -23,5 +23,5 @@ int main(){
         //use(x);
 		i++;
     }
-    return 42;
+    return z;
 }
