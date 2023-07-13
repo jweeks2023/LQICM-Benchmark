@@ -232,3 +232,6 @@ Median Runtime (sec),0.594654,
 - File skipped due to errors/warnings - This is most likely an error with your C file. Make sure you can compile and run your code through your compiler before putting it in the `CodeToTest` folder.
 
 - `Command '[COMPILER]' not found, but can be installed with:` - This means that you are referencing a compiler that you do not have installed and/or does not exist in the path defined at `COMPILERPATH`. This issue is common when you install LLVM, as many commands require the command followed by `-[VERSION NUMBER]`. This is why the default value for `COMPILER` is `clang-15`. Please verify you've installed a C compiler and that you are referencing the correct version in the command in the correct location.
+
+## References
+Moyen, J.-Y. et al. 2017. Loop Quasi-Invariant Chunk Detection. Automated Technology for Verification and Analysis. (2017), 91–108. 
