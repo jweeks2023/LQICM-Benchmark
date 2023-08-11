@@ -1,4 +1,4 @@
-# LQICM-Benchmark
+# LQICM Benchmark
 
 A repo containing the benchmark program used in the Loop Quasi-Invariant Code Motion (LQICM) project.
 
